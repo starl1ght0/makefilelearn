@@ -1,0 +1,37 @@
+SRC = $(wildcard *.c) # Находим и записываем в переменную все файлы с ".c".
+# Берём список файлов с окончанием .c из переменной SRC и переписывает расширение на .o .
+OBJ = $(patsubst *.c, %.o, $(SRC)) 
+
+ $(TARGET) : $(OBJ) # придумываем название "Исполняемый файл" : "первый исходник" "второй исходник".
+	$(CC) $(OBJ) -o $(TARGET)
+
+# Что получаем, откуда получаем, ниже - процесс, (скомпилировать my_lib.c) и в качестве объектного файла -o.
+main.o : main.c
+	$(CC) -c main.c -o main.o 
+
+my_lib.o : my_lib.c
+	$(CC) -c my_lib.c -o my_lib.o
+
+# Вместо этих 4 строчек сверху можно использовать конструкцию \
+%.o : %.c \
+	$(CC) -c $< -o $@ # то что справа $< и то что слева $@
+
+# Очищаем папку от объектных файлов. Очищается командой "make clean". 
+clean :
+	rm $(TARGET) *.o
+
+# если запутался то без использования сокращений всё выглядит так: \
+MyProject : main.o my_lib.o \
+	gcc main.o my_lib.o -o MyProject \
+\
+main.o : main.c \
+	gcc -c main.c -o main.o \
+\
+my_lib.o : my_lib.c \
+	gcc -c my_lib.c -o my_lib.o \
+\
+clean : \
+	rm MyProject *.o \
+ \
+TARGET = MyProject \
+CC = gcc
